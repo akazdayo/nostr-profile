@@ -1,5 +1,8 @@
+# prod
+out/
+
 # dev
-.vercel/
+.next/
 .yarn/
 !.yarn/releases
 .vscode/*
