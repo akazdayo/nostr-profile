@@ -162,7 +162,7 @@ export function generateProfileSvg(
 	if (nip05) {
 		const nip05Text = escapeXml(nip05);
 		const nip05TextX =
-			textStartX + displayName.length * (displayNameFontSize * 0.6) + 15; // Estimate position after display name
+			textStartX + displayName.length * (displayNameFontSize * 0.6) + 30; // Estimate position after display name
 		const nip05TextY = currentY; // Align vertically with display name
 
 		let nip05Display = "";

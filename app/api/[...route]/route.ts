@@ -16,7 +16,6 @@ app.get('/hello', (c) => {
 app.get("/profile/:publicKey", async (c) => {
 	const publicKey = c.req.param("publicKey");
 	const profile = await getUserProfile(publicKey, [
-		"wss://relay.damus.io",
 		"wss://yabu.me",
 	]);
 
