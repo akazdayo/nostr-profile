@@ -3,6 +3,7 @@ import { handle } from "hono/vercel";
 import { getUserProfile } from "../../utils/nostr";
 import { generateProfileSvg } from "../../utils/generateSvg";
 import { checkNIP05 } from "../../utils/nip05";
+import toHex from "../../utils/toHex";
 
 export const runtime = "edge";
 
@@ -14,7 +15,12 @@ app.get("/hello", (c) => {
 	});
 });
 app.get("/profile/:publicKey", async (c) => {
-	const publicKey = c.req.param("publicKey");
+	let publicKey = c.req.param("publicKey");
+	if (publicKey.startsWith("npub1")) {
+		// bech32形式の公開鍵をhex形式に変換
+		publicKey = toHex(publicKey);
+	}
+
 	const profile = await getUserProfile(publicKey, [
 		"wss://yabu.me",
 	]).catch((error) => {
@@ -46,9 +52,6 @@ app.get("/profile/:publicKey", async (c) => {
 	let nip05Verified = false;
 	if (profile.nip05) {
 		nip05Verified = await checkNIP05(publicKey, profile.nip05);
-		console.log(
-			`NIP-05 verification for ${profile.nip05}: ${nip05Verified}`,
-		);
 	}
 
 	// 検証結果を含めてSVGを生成

@@ -1,5 +1,3 @@
-import { type Event, type Filter, SimplePool } from "nostr-tools";
-
 export interface NostrProfile {
 	pubkey: string;
 	name?: string;
@@ -40,7 +38,6 @@ export async function getUserProfile(
 				// プロフィール情報を取得
 				const content = data[2].content;
 				const profile = JSON.parse(content) as NostrProfile;
-				console.log("Parsed profile:", profile);
 				resolve({ ...profile, pubkey });
 				ws.close();
 			}
