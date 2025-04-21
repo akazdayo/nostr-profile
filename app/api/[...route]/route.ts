@@ -25,6 +25,23 @@ app.get("/profile/:publicKey", async (c) => {
 		);
 	});
 
+	// プロフィール画像をbase64エンコードする
+	let imageData = "";
+	if (profile.picture) {
+		try {
+			const imageResponse = await fetch(profile.picture);
+			const arrayBuffer = await imageResponse.arrayBuffer();
+			const base64 = Buffer.from(arrayBuffer).toString("base64");
+			const contentType = imageResponse.headers.get("content-type");
+			imageData = `data:${contentType};base64,${base64}`;
+			profile.picture = imageData;
+		} catch (error) {
+			console.error("Error fetching profile image:", error);
+			// エラーが発生した場合はデフォルトアイコンを使用
+			profile.picture = undefined;
+		}
+	}
+
 	// NIP-05検証を実行
 	let nip05Verified = false;
 	if (profile.nip05) {
