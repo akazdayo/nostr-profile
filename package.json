@@ -1,5 +1,5 @@
 {
-  "name": "nostr-profile-embed",
+  "name": "nostr-profile",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
