@@ -1,4 +1,4 @@
-import { SimplePool, type Filter, type Event } from "nostr-tools";
+import { type Event, type Filter, SimplePool } from "nostr-tools";
 
 export interface NostrProfile {
 	pubkey: string;
@@ -22,44 +22,38 @@ export async function getUserProfile(
 	pubkey: string,
 	relayUrls: string[],
 ): Promise<NostrProfile> {
-	const pool = new SimplePool();
+	return new Promise((resolve, reject) => {
+		const ws = new WebSocket(relayUrls[0]);
 
-	try {
-		const filter: Filter = {
-			kinds: [0],
-			authors: [pubkey],
+		ws.onopen = () => {
+			ws.send(
+				JSON.stringify(["REQ", "profile", {
+					authors: [pubkey],
+					kinds: [0],
+				}]),
+			);
 		};
 
-		// リレーから最新のプロフィールイベントを取得
-		const event: Event | null = await pool.get(relayUrls, filter);
-		if (!event) {
-			throw new Error("No events found");
-		}
-
-		// 最新のイベントを使用
-		const profile = JSON.parse(event.content);
-
-		let content: Record<string, string> = {};
-		try {
-			content = profile;
-		} catch (e) {
-			console.error("Failed to parse profile content:", e);
-		}
-
-		// プロフィール情報を構造化して返却
-		return {
-			pubkey,
-			name: content.name,
-			display_name: content.display_name,
-			picture: content.picture,
-			banner: content.banner,
-			about: content.about,
-			website: content.website,
-			nip05: content.nip05,
-			lud16: content.lud16,
+		ws.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+			if (data[0] === "EVENT" && data[1] === "profile") {
+				// プロフィール情報を取得
+				const content = data[2].content;
+				const profile = JSON.parse(content) as NostrProfile;
+				console.log("Parsed profile:", profile);
+				resolve({ ...profile, pubkey });
+				ws.close();
+			}
 		};
-	} catch (error) {
-		console.error("Failed to fetch profile:", error);
-		throw error;
-	}
+
+		ws.onerror = (error) => {
+			reject(error);
+		};
+
+		// Add timeout to avoid hanging indefinitely
+		setTimeout(() => {
+			reject(new Error("Timeout waiting for profile data"));
+			ws.close();
+		}, 10000);
+	});
 }
