@@ -89,9 +89,9 @@ export function generateProfileSvg(
 	const userName = name ? `@${name}` : "";
 	const profilePicture = picture ||
 		`data:image/svg+xml;base64,${
-			btoa(
+			Buffer.from(
 				'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#ccc"/><text x="50" y="60" font-size="30" text-anchor="middle" fill="#fff">?</text></svg>',
-			)
+			).toString("base64")
 		}`; // Default icon
 	const aboutText = about || "";
 
