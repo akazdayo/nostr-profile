@@ -53,7 +53,9 @@ function wrapText(text: string, maxWidth: number, charWidth: number): string[] {
 					let remainingWord = word;
 					while (remainingWord.length > maxCharsPerLine) {
 						lines.push(remainingWord.substring(0, maxCharsPerLine));
-						remainingWord = remainingWord.substring(maxCharsPerLine);
+						remainingWord = remainingWord.substring(
+							maxCharsPerLine,
+						);
 					}
 					currentLine = remainingWord.length > 0 ? remainingWord : "";
 				} else {
@@ -85,14 +87,18 @@ export function generateProfileSvg(
 	// --- Default values ---
 	const displayName = display_name || name || "anonymous";
 	const userName = name ? `@${name}` : "";
-	const profilePicture =
-		picture ||
-		`data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#ccc"/><text x="50" y="60" font-size="30" text-anchor="middle" fill="#fff">?</text></svg>')}`; // Default icon
+	const profilePicture = picture ||
+		`data:image/svg+xml;base64,${
+			btoa(
+				'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#ccc"/><text x="50" y="60" font-size="30" text-anchor="middle" fill="#fff">?</text></svg>',
+			)
+		}`; // Default icon
 	const aboutText = about || "";
 
 	// --- Font styles ---
 	// Using a common cursive font as a fallback for the hand-drawn style
-	const fontFamily = "'Comic Sans MS', 'Chalkboard SE', 'marker felt', cursive";
+	const fontFamily =
+		"'Comic Sans MS', 'Chalkboard SE', 'marker felt', cursive";
 	const nameFontSize = 14;
 	const displayNameFontSize = 24;
 	const nip05FontSize = 14;
@@ -120,7 +126,8 @@ export function generateProfileSvg(
 	}
 
 	// --- SVG Generation ---
-	let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">`;
+	let svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">`;
 
 	// Add font styles within defs (optional, but good practice)
 	svg += `
@@ -133,45 +140,63 @@ export function generateProfileSvg(
       .lud16 { font-family: ${fontFamily}; font-size: ${nip05FontSize}px; fill: #794bc4; } /* Lightning purple */
     </style>
     <clipPath id="clipCircle">
-      <circle cx="${padding + iconSize / 2}" cy="${padding + iconSize / 2}" r="${iconSize / 2}" />
+      <circle cx="${padding + iconSize / 2}" cy="${
+		padding + iconSize / 2
+	}" r="${iconSize / 2}" />
     </clipPath>
   </defs>`;
 
 	// Background
-	svg += `<rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="10" ry="10" fill="${bgColor}" stroke="${borderColor}" stroke-width="2"/>`;
+	svg += `<rect x="1" y="1" width="${width - 2}" height="${
+		height - 2
+	}" rx="10" ry="10" fill="${bgColor}" stroke="${borderColor}" stroke-width="2"/>`;
 
 	// Profile Picture
-	svg += `<image href="${escapeXml(profilePicture)}" x="${padding}" y="${padding}" width="${iconSize}" height="${iconSize}" clip-path="url(#clipCircle)" />`;
+	svg += `<image href="${
+		escapeXml(profilePicture)
+	}" x="${padding}" y="${padding}" width="${iconSize}" height="${iconSize}" clip-path="url(#clipCircle)" />`;
 	// Fallback border if image fails to load (optional)
-	svg += `<circle cx="${padding + iconSize / 2}" cy="${padding + iconSize / 2}" r="${iconSize / 2}" stroke="${borderColor}" stroke-width="1" fill="none"/>`;
+	svg += `<circle cx="${padding + iconSize / 2}" cy="${
+		padding + iconSize / 2
+	}" r="${
+		iconSize / 2
+	}" stroke="${borderColor}" stroke-width="1" fill="none"/>`;
 
 	// --- Text Elements ---
 	let currentY = padding + nameFontSize + 5; // Start Y position for text
 
 	// @name (if exists)
 	if (userName) {
-		svg += `<text x="${textStartX}" y="${currentY}" class="name">${escapeXml(userName)}</text>`;
+		svg += `<text x="${textStartX}" y="${currentY}" class="name">${
+			escapeXml(userName)
+		}</text>`;
 		currentY += 5; // Add small gap
 	}
 
 	// Display Name
 	currentY += displayNameFontSize;
-	svg += `<text x="${textStartX}" y="${currentY}" class="display-name">${escapeXml(displayName)}</text>`;
+	svg += `<text x="${textStartX}" y="${currentY}" class="display-name">${
+		escapeXml(displayName)
+	}</text>`;
 
 	// NIP-05 and Checkmark (if verified)
 	if (nip05) {
 		const nip05Text = escapeXml(nip05);
-		const nip05TextX =
-			textStartX + displayName.length * (displayNameFontSize * 0.6) + 30; // Estimate position after display name
+		const nip05TextX = textStartX +
+			displayName.length * (displayNameFontSize * 0.6) + 30; // Estimate position after display name
 		const nip05TextY = currentY; // Align vertically with display name
 
 		let nip05Display = "";
 		if (nip05Verified) {
 			// Blue Checkmark SVG (approximated)
-			const checkMarkSvg = `<svg x="${nip05TextX}" y="${nip05TextY - nip05FontSize * 0.8}" width="${nip05FontSize}" height="${nip05FontSize}" viewBox="0 0 24 24" fill="${nip05Color}"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+			const checkMarkSvg = `<svg x="${nip05TextX}" y="${
+				nip05TextY - nip05FontSize * 0.8
+			}" width="${nip05FontSize}" height="${nip05FontSize}" viewBox="0 0 24 24" fill="${nip05Color}"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
 			nip05Display += checkMarkSvg;
 		}
-		nip05Display += `<text x="${nip05TextX + (nip05Verified ? nip05FontSize + 5 : 0)}" y="${nip05TextY}" class="nip05">${nip05Text}</text>`;
+		nip05Display += `<text x="${
+			nip05TextX + (nip05Verified ? nip05FontSize + 5 : 0)
+		}" y="${nip05TextY}" class="nip05">${nip05Text}</text>`;
 		svg += nip05Display;
 	}
 
@@ -179,7 +204,9 @@ export function generateProfileSvg(
 	currentY += 10; // Add gap
 	if (lud16) {
 		currentY += nip05FontSize;
-		svg += `<text x="${textStartX}" y="${currentY}" class="lud16">⚡ ${escapeXml(lud16)}</text>`;
+		svg += `<text x="${textStartX}" y="${currentY}" class="lud16">⚡ ${
+			escapeXml(lud16)
+		}</text>`;
 	}
 
 	// About Text
@@ -188,7 +215,9 @@ export function generateProfileSvg(
 		const lineY = currentY + index * (aboutFontSize * lineHeight);
 		if (lineY < height - padding) {
 			// Ensure text stays within bounds
-			svg += `<text x="${padding}" y="${lineY}" class="about">${escapeXml(line)}</text>`;
+			svg += `<text x="${padding}" y="${lineY}" class="about">${
+				escapeXml(line)
+			}</text>`;
 		}
 	});
 

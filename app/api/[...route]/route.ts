@@ -37,8 +37,8 @@ app.get("/profile/:publicKey", async (c) => {
 	// 検証結果を含めてSVGを生成
 	const response = generateProfileSvg(profile, { nip05Verified });
 	return c.body(response, 200, {
-		"Content-Type": "image/svg+xml",
-		"Cache-Control": "public, max-age=86400", // 1 day cache
+		"Content-Type": "image/svg+xml;charset=UTF-8",
+		"Access-Control-Allow-Origin": "*",
 	});
 });
 
