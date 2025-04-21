@@ -12,7 +12,7 @@ Here is an example of how to use it:
 
 ![example_profile](https://nostr-profile.vercel.app/api/profile/npub1r0hvae2ld84u9zgyqdsx7294ar4m4v3ayfnnpcftf0mk955ay93qejel3w)
 
-# Installation
+## Installation
 
 ```bash
 $ git clone https://github.com/akazdayo/nostr-profile.git
